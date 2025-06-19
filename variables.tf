@@ -21,7 +21,7 @@ variable "vpc_id" {
   description = "VPC ID"
 }
 
-variable "aws_subnet_private" {
+variable "aws_subnet_private_ids" {
   description = "Private Subnets"
 }
 

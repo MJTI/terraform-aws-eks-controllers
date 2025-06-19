@@ -16,10 +16,10 @@ resource "aws_efs_file_system" "efs-file-system" {
 }
 
 resource "aws_efs_mount_target" "mount-all-private-subnets" {
-  count = length(var.aws_subnet_private)
+  count = length(var.aws_subnet_private_ids)
 
   file_system_id  = aws_efs_file_system.efs-file-system.id
-  subnet_id       = var.aws_subnet_private[count.index].id
+  subnet_id       = var.aws_subnet_private_ids[count.index]
   security_groups = [var.cluster_security_group_id]
 }
 
