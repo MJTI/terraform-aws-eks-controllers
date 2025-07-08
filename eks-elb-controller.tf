@@ -3,6 +3,7 @@ resource "helm_release" "elb" {
   namespace  = "kube-system"
   repository = "https://aws.github.io/eks-charts"
   chart      = "aws-load-balancer-controller"
+  version    = "1.13.3"
 
   set = [
     {
@@ -22,4 +23,6 @@ resource "helm_release" "elb" {
       value = var.vpc_id
     }
   ]
+
+  depends_on = [ helm_release.this ]
 }

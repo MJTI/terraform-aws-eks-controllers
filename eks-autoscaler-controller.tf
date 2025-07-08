@@ -3,6 +3,7 @@ resource "helm_release" "this" {
   namespace  = "kube-system"
   repository = "https://kubernetes.github.io/autoscaler"
   chart      = "cluster-autoscaler"
+  version    = "9.46.6" 
 
   set = [
     {
@@ -28,7 +29,6 @@ resource "helm_release" "this" {
   ]
 
   depends_on = [helm_release.metrics]
-
 }
 
 resource "helm_release" "metrics" {
