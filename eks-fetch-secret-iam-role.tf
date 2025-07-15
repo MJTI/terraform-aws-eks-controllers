@@ -41,14 +41,14 @@ resource "aws_iam_policy" "fetch-sealed-secret" {
           "Resource": "arn:aws:ssm:${var.region}:${data.aws_caller_identity.current.account_id}:parameter/mprofile-*"
       },
       {
-        Effect   = "Allow"
-        Action   = "eks:ListClusters"
-        Resource = "*"
+        "Effect": "Allow"
+        "Action": "eks:ListClusters"
+        "Resource": "*"
       },
       {
-        Effect   = "Allow"
-        Action   = "eks:DescribeCluster"
-        Resource = "arn:aws:eks:${var.region}:${data.aws_caller_identity.current.account_id}:cluster/${var.eks_cluster_name}"
+        "Effect": "Allow"
+        "Action": "eks:DescribeCluster"
+        "Resource": "arn:aws:eks:${var.region}:${data.aws_caller_identity.current.account_id}:cluster/${var.eks_cluster_name}"
       }
     ]
 }
