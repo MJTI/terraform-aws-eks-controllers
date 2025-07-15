@@ -37,7 +37,7 @@ resource "aws_iam_policy" "fetch-sealed-secret" {
     "Statement": [
       {
           "Effect": "Allow",
-          "Action": "ssm:GetParameter",
+          "Action": "ssm:GetParameters",
           "Resource": "arn:aws:ssm:${var.region}:${data.aws_caller_identity.current.account_id}:parameter/mprofile-*"
       },
       {
