@@ -1,6 +1,6 @@
     #!/bin/bash
 
-    set -euo pipefail
+    set -e
 
     CLUSTER_NAME="${1:-}"
     REGION="${2:-}"
