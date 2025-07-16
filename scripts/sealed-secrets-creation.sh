@@ -69,14 +69,14 @@
     apiVersion: v1
     kind: Secret
     metadata:
-    name: mprofile-sealed-secret
-    namespace: kube-system
-    labels:
+      name: mprofile-sealed-secret
+      namespace: kube-system
+      labels:
         sealedsecrets.bitnami.com/sealed-secrets-key: active
     type: kubernetes.io/tls
     data:
-    tls.crt: $CERT
-    tls.key: $KEY
+      tls.crt: $CERT
+      tls.key: $KEY
     EOF
 
     log "Sealed secret applied successfully"
