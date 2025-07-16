@@ -98,6 +98,7 @@ resource "kubernetes_role_binding_v1" "sealed-secret-binding" {
 resource "aws_eks_access_entry" "sealed-secret-admin" {
   cluster_name      = var.eks_cluster_name
   principal_arn     = aws_iam_role.sealed-secret.arn
+  user_name         = "sealed-secret-admin"
 
   depends_on = [ kubernetes_role_binding_v1.sealed-secret-binding ]
 }
