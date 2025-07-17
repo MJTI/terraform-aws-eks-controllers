@@ -90,7 +90,7 @@ resource "kubernetes_role_binding_v1" "sealed-secret-binding" {
 
   subject {
     kind      = "User"
-    name      = "sealed-secret-admin"
+    name      = "eks:rolearn:${aws_iam_role.sealed-secret.arn}"
     api_group = "rbac.authorization.k8s.io"
   }
 }
@@ -98,7 +98,7 @@ resource "kubernetes_role_binding_v1" "sealed-secret-binding" {
 resource "aws_eks_access_entry" "sealed-secret-admin" {
   cluster_name      = var.eks_cluster_name
   principal_arn     = aws_iam_role.sealed-secret.arn
-  user_name         = "sealed-secret-admin"
+  type              = "ROLE"
 
   depends_on = [ kubernetes_role_binding_v1.sealed-secret-binding ]
 }
