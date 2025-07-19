@@ -63,6 +63,7 @@ resource "aws_iam_role_policy_attachment" "sealed-secret" {
 resource "kubernetes_role_v1" "secret-role" {
   metadata {
     name = "sealed-secrets"
+    namespace = "kube-system"
     labels = {
       usage = "creating-secret-for-sealed-secret-controller"
     }
@@ -71,7 +72,6 @@ resource "kubernetes_role_v1" "secret-role" {
   rule {
     api_groups     = [""]
     resources      = ["secrets"]
-    resource_names = ["mprofile-sealed-secret"]
     verbs          = ["*"]
   }
 }
@@ -89,8 +89,8 @@ resource "kubernetes_role_binding_v1" "sealed-secret-binding" {
   }
 
   subject {
-    kind      = "User"
-    name      = "eks:rolearn:${aws_iam_role.sealed-secret.arn}"
+    kind      = "Group"
+    name      = "sealed-secret-group"
     api_group = "rbac.authorization.k8s.io"
   }
 }
@@ -99,6 +99,7 @@ resource "aws_eks_access_entry" "sealed-secret-admin" {
   cluster_name      = var.eks_cluster_name
   principal_arn     = aws_iam_role.sealed-secret.arn
   type              = "STANDARD"
+  kubernetes_groups = [ "sealed-secret-group" ]
 
   depends_on = [ kubernetes_role_binding_v1.sealed-secret-binding ]
 }

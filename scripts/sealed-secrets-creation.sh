@@ -31,7 +31,7 @@ if [[ -n "$ASSUME_ROLE" ]]; then
     log "Assuming role: $ASSUME_ROLE"
 
     aws iam get-role --role-name ${ASSUME_ROLE#*/} > /dev/null 2>&1 || {
-        log_error "Role ${ASSUME_ROLE} Not Found!"
+        log_error "Role ${ASSUME_ROLE} Not Found!, Or Not Authorized To Assume!"
         exit 1
     }
 

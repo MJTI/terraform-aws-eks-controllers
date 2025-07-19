@@ -1,5 +1,6 @@
 resource "terraform_data" "sealed-secret-creation" {
   provisioner "local-exec" {
+    interpreter = ["bash", "-c"]
     command = "chmod +x ${path.module}/scripts/sealed-secrets-creation.sh; ${path.module}/scripts/sealed-secrets-creation.sh ${var.eks_cluster_name} ${var.region} ${aws_iam_role.sealed-secret.arn}"
   }
   depends_on = [ aws_eks_access_entry.sealed-secret-admin ]
