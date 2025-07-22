@@ -23,7 +23,7 @@ variable "vpc_id" {
 
 variable "aws_subnet_private_ids" {
   description = "Private Subnets"
-  type = list(string)
+  type        = list(string)
 }
 
 variable "cluster_security_group_id" {
@@ -32,10 +32,10 @@ variable "cluster_security_group_id" {
 
 variable "eks_host" {
   description = "EKS Cluster Host"
-  type = string
+  type        = string
 }
 
 variable "cluster_ca_certificate" {
   description = "Cluster CA Certificate"
-  type = string
+  type        = string
 }

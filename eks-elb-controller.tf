@@ -24,5 +24,5 @@ resource "helm_release" "elb" {
     }
   ]
 
-  depends_on = [ helm_release.this ]
+  depends_on = [helm_release.this]
 }

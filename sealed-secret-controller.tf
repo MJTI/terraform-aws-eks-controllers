@@ -1,9 +1,9 @@
 resource "terraform_data" "sealed-secret-creation" {
   provisioner "local-exec" {
     interpreter = ["bash", "-c"]
-    command = "chmod +x ${path.module}/scripts/sealed-secrets-creation.sh; ${path.module}/scripts/sealed-secrets-creation.sh ${var.eks_cluster_name} ${var.region} ${aws_iam_role.sealed-secret.arn}"
+    command     = "chmod +x ${path.module}/scripts/sealed-secrets-creation.sh; ${path.module}/scripts/sealed-secrets-creation.sh ${var.eks_cluster_name} ${var.region} ${aws_iam_role.sealed-secret.arn}"
   }
-  depends_on = [ aws_eks_access_entry.sealed-secret-admin ]
+  depends_on = [aws_eks_access_entry.sealed-secret-admin]
 }
 
 resource "helm_release" "sealed-secret" {
@@ -24,5 +24,5 @@ resource "helm_release" "sealed-secret" {
     }
   ]
 
-  depends_on = [ helm_release.elb, terraform_data.sealed-secret-creation ]
+  depends_on = [helm_release.elb, terraform_data.sealed-secret-creation]
 }

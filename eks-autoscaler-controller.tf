@@ -3,7 +3,7 @@ resource "helm_release" "this" {
   namespace  = "kube-system"
   repository = "https://kubernetes.github.io/autoscaler"
   chart      = "cluster-autoscaler"
-  version    = "9.46.6" 
+  version    = "9.46.6"
 
   set = [
     {

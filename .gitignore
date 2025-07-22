@@ -1,0 +1,15 @@
+# Terraform files to ignore
+.terraform/
+*.tfstate
+*.tfstate.*
+crash.log
+*.tfplan
+*.tfvars
+.terraform.lock.hcl
+.terraformrc
+terraform.rc
+
+.vscode/
+
+.terragrunt-cache
+terragrunt-debug.tfvars*
