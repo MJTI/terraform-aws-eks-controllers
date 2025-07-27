@@ -1,0 +1,50 @@
+name: CI Terraform EKS Controllers Module
+
+on:
+  pull_request:
+    branches:
+      - main
+  push:
+    branches:
+      - main
+      - stage
+  workflow_dispatch:
+
+jobs:
+  test_terraform_module:
+    runs-on: ubuntu-24.04
+    permissions:
+      id-token: write
+      contents: read
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Configure AWS with OIDC
+        uses: aws-actions/configure-aws-credentials@v4.1.0
+        with:
+          role-to-assume: "arn:aws:iam::${{ secrets.AWS_ACCOUNT_ID }}:role/terraform-githubaction"
+          aws-region: ${{ vars.AWS_REGION }}
+
+      - name: install terraform
+        uses: hashicorp/setup-terraform@v3.1.2
+        with:
+          terraform_version: "1.12.2"
+
+      - name: Check Terraform Version
+        run: terraform --version
+
+      - name: Terraform init
+        run: terraform init
+
+      - name: Checking The Formatting Of The .tf Files
+        run: terraform fmt -check
+        continue-on-error: true
+
+      - name: Validating Terraform files
+        run: terraform validate
+
+      - name: Planning Terrafom
+        id: plan
+        run: terraform plan -var-file=fake-values.yaml -no-color
