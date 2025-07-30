@@ -5,7 +5,6 @@ set -e
 CLUSTER_NAME="${1:-}"
 REGION="${2:-}"
 ASSUME_ROLE="${3:-}"
-AWS_PROFILE="${4:-default}"
 
 : "${CLUSTER_NAME:?Missing cluster name}"
 : "${REGION:?Missing region}"
@@ -28,15 +27,18 @@ done
 
 if [[ -n "$ASSUME_ROLE" ]]; then
 
-    log "Assuming role: $ASSUME_ROLE"
+    log "Checking if The Role ${ASSUME_ROLE} Exist..."
 
     aws iam get-role --role-name ${ASSUME_ROLE#*/} > /dev/null 2>&1 || {
         log_error "Role ${ASSUME_ROLE} Not Found!, Or Not Authorized To Assume!"
         exit 1
     }
 
+    log "Role ${ASSUME_ROLE} Does Exist!"
+
+    log "Assuming role: ${ASSUME_ROLE} ..."
+
     CREDS=$(aws sts assume-role \
-        --profile "$AWS_PROFILE" \
         --role-arn "$ASSUME_ROLE" \
         --role-session-name "sealedSecretSession" \
         --query 'Credentials' \
@@ -49,17 +51,17 @@ if [[ -n "$ASSUME_ROLE" ]]; then
     export AWS_SECRET_ACCESS_KEY=$(echo "$CREDS" | jq -r .SecretAccessKey)
     export AWS_SESSION_TOKEN=$(echo "$CREDS" | jq -r .SessionToken)
 
-    log "Assumed role credetials set"
+    log "Assumed Role Credentials Set"
 fi
 
-log "Updating kubeconfig for cluster: $CLUSTER_NAME"
+log "Updating Kubeconfig For Cluster: $CLUSTER_NAME ..."
 aws eks update-kubeconfig --name $CLUSTER_NAME --region $REGION
 
-log "Fetching public cert and private key from AWS Parameter Store"
+log "Fetching Public Cert And Private Key From AWS Parameter Store..."
 CERT=$(aws ssm get-parameters --name mprofile-public-key --with-decryption --query "Parameters[*].Value" --output text | base64 | tr -d '\n')
 KEY=$(aws ssm get-parameters --name mprofile-private-key --with-decryption --query "Parameters[*].Value" --output text | base64 | tr -d '\n')
 
-log "Applying TLS secret to kube-system namespace"
+log "Applying TLS Secret To kube-system Namespace..."
 kubectl apply -f - <<EOF
 apiVersion: v1
 kind: Secret
@@ -74,4 +76,4 @@ data:
   tls.key: $KEY
 EOF
 
-log "Sealed secret applied successfully"
+log "Sealed Secret Applied Successfully"
