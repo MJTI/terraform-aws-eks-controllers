@@ -14,7 +14,8 @@ resource "aws_iam_role" "sealed-secret" {
         ]
         Principal = {
           AWS = [
-            "arn:aws:iam::${data.aws_caller_identity.current.account_id}:user/awscli"
+            "arn:aws:iam::${data.aws_caller_identity.current.account_id}:user/awscli",
+            "arn:aws:iam::${data.aws_caller_identity.current.account_id}:role/terraform-githubaction"
           ]
         }
       }
