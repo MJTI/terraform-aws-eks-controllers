@@ -25,34 +25,31 @@ for cmd in aws kubectl base64 jq; do
     }
 done
 
-if [[ -n "$ASSUME_ROLE" ]]; then
 
-    log "Checking if The Role ${ASSUME_ROLE} Exist..."
+log "Checking if The Role ${ASSUME_ROLE#*/} Exist..."
+aws iam get-role --role-name ${ASSUME_ROLE#*/} > /dev/null 2>&1 || {
+    log_error "Role ${ASSUME_ROLE} Not Found!, Or Not Authorized To Assume!"
+    exit 1
+}
+log "Role ${ASSUME_ROLE} Does Exist!"
 
-    aws iam get-role --role-name ${ASSUME_ROLE#*/} > /dev/null 2>&1 || {
-        log_error "Role ${ASSUME_ROLE} Not Found!, Or Not Authorized To Assume!"
+
+log "Assuming role: ${ASSUME_ROLE} ..."
+CREDS=$(aws sts assume-role \
+    --role-arn "$ASSUME_ROLE" \
+    --role-session-name "sealedSecretSession" \
+    --query 'Credentials' \
+    --output json) || {
+        log_error "Cannot Assume ${ASSUME_ROLE}."
         exit 1
     }
 
-    log "Role ${ASSUME_ROLE} Does Exist!"
+export AWS_ACCESS_KEY_ID=$(echo "$CREDS" | jq -r .AccessKeyId)
+export AWS_SECRET_ACCESS_KEY=$(echo "$CREDS" | jq -r .SecretAccessKey)
+export AWS_SESSION_TOKEN=$(echo "$CREDS" | jq -r .SessionToken)
 
-    log "Assuming role: ${ASSUME_ROLE} ..."
+log "Assumed Role Credentials Set"
 
-    CREDS=$(aws sts assume-role \
-        --role-arn "$ASSUME_ROLE" \
-        --role-session-name "sealedSecretSession" \
-        --query 'Credentials' \
-        --output json) || {
-            log_error "Cannot Assume ${ASSUME_ROLE}."
-            exit 1
-        }
-
-    export AWS_ACCESS_KEY_ID=$(echo "$CREDS" | jq -r .AccessKeyId)
-    export AWS_SECRET_ACCESS_KEY=$(echo "$CREDS" | jq -r .SecretAccessKey)
-    export AWS_SESSION_TOKEN=$(echo "$CREDS" | jq -r .SessionToken)
-
-    log "Assumed Role Credentials Set"
-fi
 
 log "Updating Kubeconfig For Cluster: $CLUSTER_NAME ..."
 aws eks update-kubeconfig --name $CLUSTER_NAME --region $REGION
